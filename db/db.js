@@ -71,7 +71,7 @@ export default {
 				image: "images/Carto_SSP.png",
 				summary:
 					"Conception et pilotage du projet SIG de création d'une cartographie des Sites et Sols Pollués (SSP) pour enrichir un outil de visualisation cartographique web.",
-				preview: "https://programmingdiaries.herokuapp.com/",
+				preview: "https://github.com/PabloSIGAT/PabloSIGAT.github.io/raw/main/CARTO_SSP/Memoire_stage-RIAL_GIL_Pablo-2022-ESID_Rennesv2.pdf",
 				techStack: [""],
 			},
 			{
