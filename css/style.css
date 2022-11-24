@@ -25,6 +25,29 @@
 *	Edit this section
 *
 * ======================================================= */
+.banner{	
+	display: flex;	
+	background-color: #BA94D1;
+	align-items: center;	
+	padding: 10px 20px;
+}
+.logo{
+	display: flex;
+	margin: 0;
+	font-size: 30px;
+	font-family: "Montserrat", Georgia, serif;
+	align-items: center;	
+}
+.logo img{
+	height: 80px;
+	margin-right: 10px;	
+}
+.logo p{
+	text-align: center;
+}
+.logo_titre{
+	padding: 10px;
+}
 body {
 	font-family: "Quicksand", Arial, sans-serif;
 	font-weight: 400;
@@ -34,7 +57,7 @@ body {
 }
 @media screen and (max-width: 992px) {
 	body {
-		font-size: 16px;
+		font-size: 14px;
 		text-align: justify;
 	}
 	h2,
@@ -43,11 +66,56 @@ body {
 	}
 }
 
+section.projet{
+	padding: 0px 20px;
+}
+
+.bordure_rapport{
+	width: 200px;
+	height: 71px;
+	background-color: #BA94D1;
+	border-radius: 20px;
+	border: solid;
+	border-color: #ff6b92;
+	display: flex;
+	padding: 10px;
+}
+
+.bordure_text_rapport{
+	width: 100px;
+	height: 20px;
+	background-color: #BA94D1;	
+	padding: 27px 10px 20px;	
+}
+
+a.rapport {
+	color: #000000;
+	font-size: 16px;
+	font-weight: bold;
+	text-decoration: none;
+	
+				
+}
+
+p.projet{
+	font-size: 16px;
+	font-family: "Montserrat", sans-serif;
+	text-align: justify;
+}
+
+h1.projet{
+	font-family: "Playfair Display", Georgia, serif;
+	font-size: 30px;
+	font-weight: bold;
+	margin: 20px 0px 10px;	
+}
+
 a {
-	color: #2c98f0;
+	color: #2c98f0;	
+	text-decoration: none;  
 	-webkit-transition: 0.5s;
 	-o-transition: 0.5s;
-	transition: 0.5s;
+	transition: 0.5s;		
 }
 a:hover,
 a:active,

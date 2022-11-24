@@ -69,17 +69,15 @@ export default {
 			{
 				projectName: "Cartographie SSP",
 				image: "images/Carto_SSP.png",
-				summary:
-					"Conception et pilotage du projet SIG de création d'une cartographie des Sites et Sols Pollués (SSP) pour enrichir un outil de visualisation cartographique web.",
-				preview: "https://github.com/PabloSIGAT/PabloSIGAT.github.io/raw/main/CARTO_SSP/Memoire_stage-RIAL_GIL_Pablo-2022-ESID_Rennesv2.pdf",
+				summary: "Conception et pilotage du projet SIG de création d'une cartographie des Sites et Sols Pollués (SSP) pour enrichir un outil de visualisation cartographique web.",
+				preview: "pages/Projet_1/Projet_1.html",
 				techStack: [""],
 			},
 			{
 				projectName: "Cartographie des ICU à Rennes",
 				image: "images/LETG.png",
-				summary:
-					"Étude des représentations cartographiques adaptées à la caractérisation d'un Îlot de Chaleur Urbain (ICU)",
-				preview: "https://github.com/PabloSIGAT/PabloSIGAT.github.io/raw/main/LETG/Rapport_LETG.pdf",
+				summary: "Étude des représentations cartographiques adaptées à la caractérisation d'un Îlot de Chaleur Urbain (ICU)",
+				preview: "pages/Projet_2/Projet_2.html",
 				techStack: [""],
 			},			
 		],
@@ -87,10 +85,8 @@ export default {
 			{
 				projectName: "Estimation de la population par bâtiment",
 				image: "images/AUDIAR.png",
-				summary:
-					"Désagrégation spatiale des données de population à l'échelle du bâtiment",
-				preview:
-					"https://github.com/PabloSIGAT/PabloSIGAT.github.io/raw/main/AUDIAR/Rapport_Atelier_Audiar.pdf",
+				summary: "Désagrégation spatiale des données de population à l'échelle du bâtiment",
+				preview: "pages/Projet_3/Projet_3.html",
 				techStack: [""],
 			},						
 		],
@@ -98,9 +94,8 @@ export default {
 			{
 				projectName: "Projet d'aménagement du territoire",
 				image: "images/FORET.png",
-				summary:
-					"Réalisation d'un projet d'aménagement forestier pour une communauté de propriétaires",
-				preview: "https://github.com/PabloSIGAT/PabloSIGAT.github.io/raw/main/FORESTIER/Portfolio_Eng_Forestier.pdf",
+				summary: "Réalisation d'un projet d'aménagement forestier pour une communauté de propriétaires",
+				preview: "pages/Projet_4/Projet_4.html",
 				techStack: [""],
 			},			
 		],		
