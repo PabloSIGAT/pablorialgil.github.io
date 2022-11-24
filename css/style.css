@@ -48,6 +48,14 @@
 .logo_titre{
 	padding: 10px;
 }
+@media screen and (max-width: 360px) {
+	.logo{		
+		font-size: 20px;			
+	}
+	.logo img{
+		height: 60px;			
+	}	
+}
 body {
 	font-family: "Quicksand", Arial, sans-serif;
 	font-weight: 400;
@@ -109,7 +117,14 @@ h1.projet{
 	font-weight: bold;
 	margin: 20px 0px 10px;	
 }
-
+@media screen and (max-width: 360px) {
+	p.projet{
+		font-size: 12px;	
+	}	
+	h1.projet{		
+		font-size: 20px;			
+	}
+}
 a {
 	color: #2c98f0;	
 	text-decoration: none;  
