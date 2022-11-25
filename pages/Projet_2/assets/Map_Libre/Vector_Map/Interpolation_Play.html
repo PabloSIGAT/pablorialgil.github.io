@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="icon" type="image/png" href="Data/logo.png" />
+<meta charset="utf-8" />
+<title>Interpolation des ICU</title>
+<meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+<script src="https://unpkg.com/maplibre-gl@2.1.7/dist/maplibre-gl.js"></script>
+<link href="https://unpkg.com/maplibre-gl@2.1.7/dist/maplibre-gl.css" rel="stylesheet" />
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script> 
+<style>
+	body { margin: 0; padding: 0; }
+	#map { position: absolute; top: 0; bottom: 0; width: 100%; }
+</style>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div id="map"></div>
+<button id="play"></button>
+
+<div class="map-overlay top">
+    <div class="map-overlay-inner">
+        <h2>22 julliet 2021 </h2>
+        <label id="hour"></label>
+        <input id="slider" type="range" min="0" max="23" step="1" value="0" onchange="switchlayer('Int_ICU'+slider.value)" oninput= "slider.value" />
+    </div>
+    <div class="map-overlay-inner">
+        <div id="legend" class="legend">
+            <div class="bar"></div>
+            <div>Intensité Îlot de Chaleur Urbain (ICU)</div>
+        </div>
+    </div>
+</div>
+
+<script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+<script>
+    var map = new maplibregl.Map({
+        container: 'map',
+        style: 'https://api.maptiler.com/maps/hybrid/style.json?key=get_your_own_OpIi9ZULNHzrESv6T2vL',     // (Satellite Labels)
+        //style: 'https://api.maptiler.com/maps/streets/style.json?key=get_your_own_OpIi9ZULNHzrESv6T2vL',
+        //style: 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json',
+        //style: 'https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json',
+        //style: 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json',
+        //style: 'https://maps.fleetmon.com/styles/fm-light-no-labels/style.json',
+        //style: 'https://maps.fleetmon.com/styles/fm-street-no-labels/style.json',
+        center: [-1.67, 48.11],
+        zoom: 10.5,
+        scrollZoom: true
+    });
+
+    var hour = [
+        '00:00:00',
+        '01:00:00',
+        '02:00:00',
+        '03:00:00',
+        '04:00:00',
+        '05:00:00',
+        '06:00:00',
+        '07:00:00',
+        '08:00:00',
+        '09:00:00',
+        '10:00:00',
+        '11:00:00',
+        '12:00:00',
+        '13:00:00',
+        '14:00:00',
+        '15:00:00',
+        '16:00:00',
+        '17:00:00',
+        '18:00:00',
+        '19:00:00',
+        '20:00:00',
+        '21:00:00',
+        '22:00:00',
+        '23:00:00'
+    ];
+    
+    function filterBy(hour) {
+        var filters = ['==', 'hour', hour];
+        map.setFilter('Temp-circles', filters);
+        map.setFilter('Temp-labels', filters);
+             
+
+        // Set the label to the hour
+        document.getElementById('hour').textContent = hour[hour];
+        console.log(hour);
+    }
+
+    map.on('load', function () {        
+              
+        d3.json(
+            'Data/Jour/S1geom_22.geojson',
+            function (err, data) {
+                if (err) throw err;
+
+                // Create a hour property value based on time
+                // used to filter against.
+                data.features = data.features.map(function (h) {
+                    h.properties.hour = new Date(h.properties.timestamp).getHours();
+                    return h;                                                                                                
+            });
+
+                map.addSource('Temp', {
+                    'type': 'geojson',
+                    data: data
+                });
+
+                map.addLayer({
+                    'id': 'Temp-circles',
+                    'type': 'circle',
+                    'source': 'Temp',
+                    'paint': {
+                        'circle-color': [
+                            'interpolate',
+                            ['linear'],
+                            ['get', 'Temp'],
+                            12,
+                            '#02b0fa',
+                            24,
+                            '#fa0202'
+                        ],
+                        'circle-opacity': 0.75,
+                        'circle-radius': [
+                            'interpolate',
+                            ['linear'],
+                            ['get', 'Temp'],
+                            2,
+                            2,
+                            4,
+                            6
+                        ]
+                    }
+                });
+
+                map.addLayer({
+                    'id': 'Temp-labels',
+                    'type': 'symbol',
+                    'source': 'Temp',
+                    'layout': {
+                        'text-field': [
+                            'concat',
+                            ['to-string', ['get', 'Temp']],
+                            '°C'
+                        ],
+                        'text-font': [
+                            'Open Sans Bold',
+                            'Arial Unicode MS Bold'
+                        ],
+                        'text-size': 12
+                    },
+                    'paint': {
+                        'text-color': 'rgba(0,0,0,0.5)'
+                    }
+                });   
+
+
+                // Set filter to first month of the year
+                // 0 = January
+                filterBy(0);
+
+                document.getElementById('slider').addEventListener('input', function (e) {
+                        var hour = parseInt(e.target.value,10);
+                        filterBy(hour);                                                                                                                                                
+                    });     
+                   
+                
+
+                    
+            }
+        );
+
+
+        // INTERPOLATION PAR HEURES
+        // 0         
+        map.addSource('Int_ICU0', 
+            {
+            'type': 'geojson',
+            'data': 'Data/Result/ICU_Contours_22_0.geojson'
+            }
+                                    
+        ); 
+
+        map.addLayer(
+        {
+            'id': 'Int_ICU0',
+            'type': 'fill',
+            'source': 'Int_ICU0',
+            'layout': {'visibility': 'visible'},                    
+            'paint': {
+                        'fill-color': 
+                        [                            
+                        'step',
+                        ["number",['get', 'ICU']],                       
+                        'Green', 1,                        
+                        'Yellow', 2,
+                        'Orange', 3,                        
+                        'Red'              
+
+                        ],
+                        'fill-opacity': 0.3
+                    },
+        
+        });
+
+        // INTERPOLATION PAR HEURES
+        // 1         
+        map.addSource('Int_ICU1', 
+            {
+            'type': 'geojson',
+            'data': 'Data/Result/ICU_Contours_22_1.geojson'
+            }
+                                    
+        ); 
+
+        map.addLayer(
+        {
+            'id': 'Int_ICU1',
+            'type': 'fill',
+            'source': 'Int_ICU1',
+            'layout': {'visibility': 'none'},                    
+            'paint': {
+                        'fill-color': 
+                        [                            
+                        'step',
+                        ["number",['get', 'ICU']],
+                        'Green', 1,                        
+                        'Yellow', 2,
+                        'Orange', 3,                        
+                        'Red'   
+
+                        ],
+                        'fill-opacity': 0.3
+                    },
+        
+        });
+
+        // INTERPOLATION PAR HEURES
+        // 2         
+        map.addSource('Int_ICU2', 
+            {
+            'type': 'geojson',
+            'data': 'Data/Result/ICU_Contours_22_2.geojson'
+            }
+                                    
+        ); 
+
+        map.addLayer(
+        {
+            'id': 'Int_ICU2',
+            'type': 'fill',
+            'source': 'Int_ICU2',
+            'layout': {'visibility': 'none'},                    
+            'paint': {
+                        'fill-color': 
+                        [                            
+                        'step',
+                        ["number",['get', 'ICU']],
+                        'Green', 1,                        
+                        'Yellow', 2,
+                        'Orange', 3,                        
+                        'Red'   
+
+                        ],
+                        'fill-opacity': 0.3
+                    },
+        
+        });
+
+        // INTERPOLATION PAR HEURES
+        // 3         
+        map.addSource('Int_ICU3', 
+            {
+            'type': 'geojson',
+            'data': 'Data/Result/ICU_Contours_22_3.geojson'
+            }
+                                    
+        ); 
+
+        map.addLayer(
+        {
+            'id': 'Int_ICU3',
+            'type': 'fill',
+            'source': 'Int_ICU3',
+            'layout': {'visibility': 'none'},                    
+            'paint': {
+                        'fill-color': 
+                        [                            
+                        'step',
+                        ["number",['get', 'ICU']],
+                        'Green', 1,                        
+                        'Yellow', 2,
+                        'Orange', 3,                        
+                        'Red'   
+
+                        ],
+                        'fill-opacity': 0.3
+                    },
+        
+        });
+        
+
+        // INTERPOLATION PAR HEURES
+        // 4        
+        map.addSource('Int_ICU4', 
+            {
+            'type': 'geojson',
+            'data': 'Data/Result/ICU_Contours_22_4.geojson'
+            }
+                                    
+        ); 
+
+        map.addLayer(
+        {
+            'id': 'Int_ICU4',
+            'type': 'fill',
+            'source': 'Int_ICU4',
+            'layout': {'visibility': 'none'},                    
+            'paint': {
+                        'fill-color': 
+                        [                            
+                        'step',
+                        ["number",['get', 'ICU']],
+                        'Green', 1,                        
+                        'Yellow', 2,
+                        'Orange', 3,                        
+                        'Red'   
+
+                        ],
+                        'fill-opacity': 0.3
+                    },
+        
+        });
+
+
+        // INTERPOLATION PAR HEURES
+        // 5        
+        map.addSource('Int_ICU5', 
+            {
+            'type': 'geojson',
+            'data': 'Data/Result/ICU_Contours_22_5.geojson'
+            }
+                                    
+        ); 
+
+        map.addLayer(
+        {
+            'id': 'Int_ICU5',
+            'type': 'fill',
+            'source': 'Int_ICU5',
+            'layout': {'visibility': 'none'},                    
+            'paint': {
+                        'fill-color': 
+                        [                            
+                        'step',
+                        ["number",['get', 'ICU']],
+                        'Green', 1,                        
+                        'Yellow', 2,
+                        'Orange', 3,                        
+                        'Red'   
+
+                        ],
+                        'fill-opacity': 0.3
+                    },
+        
+        });
+
+        // INTERPOLATION PAR HEURES
+        // 6        
+        map.addSource('Int_ICU6', 
+            {
+            'type': 'geojson',
+            'data': 'Data/Result/ICU_Contours_22_6.geojson'
+            }
+                                    
+        ); 
+
+        map.addLayer(
+        {
+            'id': 'Int_ICU6',
+            'type': 'fill',
+            'source': 'Int_ICU6',
+            'layout': {'visibility': 'none'},                    
+            'paint': {
+                        'fill-color': 
+                        [                            
+                        'step',
+                        ["number",['get', 'ICU']],
+                        'Green', 1,                        
+                        'Yellow', 2,
+                        'Orange', 3,                        
+                        'Red'   
+
+                        ],
+                        'fill-opacity': 0.3
+                    },
+        
+        });
+
+        // INTERPOLATION PAR HEURES
+        // 7        
+        map.addSource('Int_ICU7', 
+            {
+            'type': 'geojson',
+            'data': 'Data/Result/ICU_Contours_22_7.geojson'
+            }
+                                    
+        ); 
+
+        map.addLayer(
+        {
+            'id': 'Int_ICU7',
+            'type': 'fill',
+            'source': 'Int_ICU7',
+            'layout': {'visibility': 'none'},                    
+            'paint': {
+                        'fill-color': 
+                        [                            
+                        'step',
+                        ["number",['get', 'ICU']],
+                        'Green', 1,                        
+                        'Yellow', 2,
+                        'Orange', 3,                        
+                        'Red'   
+
+                        ],
+                        'fill-opacity': 0.3
+                    },
+        
+        });
+
+        // INTERPOLATION PAR HEURES
+        // 8        
+        map.addSource('Int_ICU8', 
+            {
+            'type': 'geojson',
+            'data': 'Data/Result/ICU_Contours_22_8.geojson'
+            }
+                                    
+        ); 
+
+        map.addLayer(
+        {
+            'id': 'Int_ICU8',
+            'type': 'fill',
+            'source': 'Int_ICU8',
+            'layout': {'visibility': 'none'},                    
+            'paint': {
+                        'fill-color': 
+                        [                            
+                        'step',
+                        ["number",['get', 'ICU']],
+                        'Green', 1,                        
+                        'Yellow', 2,
+                        'Orange', 3,                        
+                        'Red'   
+
+                        ],
+                        'fill-opacity': 0.3
+                    },
+        
+        });
+
+        // INTERPOLATION PAR HEURES
+        // 9        
+        map.addSource('Int_ICU9', 
+            {
+            'type': 'geojson',
+            'data': 'Data/Result/ICU_Contours_22_9.geojson'
+            }
+                                    
+        ); 
+
+        map.addLayer(
+        {
+            'id': 'Int_ICU9',
+            'type': 'fill',
+            'source': 'Int_ICU9',
+            'layout': {'visibility': 'none'},                    
+            'paint': {
+                        'fill-color': 
+                        [                            
+                        'step',
+                        ["number",['get', 'ICU']],
+                        'Green', 1,                        
+                        'Yellow', 2,
+                        'Orange', 3,                        
+                        'Red'   
+
+                        ],
+                        'fill-opacity': 0.3
+                    },
+        
+        });
+
+        // INTERPOLATION PAR HEURES
+        // 10       
+        map.addSource('Int_ICU10', 
+            {
+            'type': 'geojson',
+            'data': 'Data/Result/ICU_Contours_22_10.geojson'
+            }
+                                    
+        ); 
+
+        map.addLayer(
+        {
+            'id': 'Int_ICU10',
+            'type': 'fill',
+            'source': 'Int_ICU10',
+            'layout': {'visibility': 'none'},                    
+            'paint': {
+                        'fill-color': 
+                        [                            
+                        'step',
+                        ["number",['get', 'ICU']],
+                        'Green', 1,                        
+                        'Yellow', 2,
+                        'Orange', 3,                        
+                        'Red'   
+
+                        ],
+                        'fill-opacity': 0.3
+                    },
+        
+        });
+
+        // INTERPOLATION PAR HEURES
+        // 11       
+        map.addSource('Int_ICU11', 
+            {
+            'type': 'geojson',
+            'data': 'Data/Result/ICU_Contours_22_11.geojson'
+            }
+                                    
+        ); 
+
+        map.addLayer(
+        {
+            'id': 'Int_ICU11',
+            'type': 'fill',
+            'source': 'Int_ICU11',
+            'layout': {'visibility': 'none'},                    
+            'paint': {
+                        'fill-color': 
+                        [                            
+                        'step',
+                        ["number",['get', 'ICU']],
+                        'Green', 1,                        
+                        'Yellow', 2,
+                        'Orange', 3,                        
+                        'Red'   
+
+                        ],
+                        'fill-opacity': 0.3
+                    },
+        
+        });
+
+        // INTERPOLATION PAR HEURES
+        // 12       
+        map.addSource('Int_ICU12', 
+            {
+            'type': 'geojson',
+            'data': 'Data/Result/ICU_Contours_22_12.geojson'
+            }
+                                    
+        ); 
+
+        map.addLayer(
+        {
+            'id': 'Int_ICU12',
+            'type': 'fill',
+            'source': 'Int_ICU12',
+            'layout': {'visibility': 'none'},                    
+            'paint': {
+                        'fill-color': 
+                        [                            
+                        'step',
+                        ["number",['get', 'ICU']],
+                        'Green', 1,                        
+                        'Yellow', 2,
+                        'Orange', 3,                        
+                        'Red'   
+
+                        ],
+                        'fill-opacity': 0.3
+                    },
+        
+        });
+
+        // INTERPOLATION PAR HEURES
+        // 13        
+        map.addSource('Int_ICU13', 
+            {
+            'type': 'geojson',
+            'data': 'Data/Result/ICU_Contours_22_13.geojson'
+            }
+                                    
+        ); 
+
+        map.addLayer(
+        {
+            'id': 'Int_ICU13',
+            'type': 'fill',
+            'source': 'Int_ICU13',
+            'layout': {'visibility': 'none'},                    
+            'paint': {
+                        'fill-color': 
+                        [                            
+                        'step',
+                        ["number",['get', 'ICU']],
+                        'Green', 1,                        
+                        'Yellow', 2,
+                        'Orange', 3,                        
+                        'Red'   
+
+                        ],
+                        'fill-opacity': 0.3
+                    },
+        
+        });
+
+        // INTERPOLATION PAR HEURES
+        // 14       
+        map.addSource('Int_ICU14', 
+            {
+            'type': 'geojson',
+            'data': 'Data/Result/ICU_Contours_22_14.geojson'
+            }
+                                    
+        ); 
+
+        map.addLayer(
+        {
+            'id': 'Int_ICU14',
+            'type': 'fill',
+            'source': 'Int_ICU14',
+            'layout': {'visibility': 'none'},                    
+            'paint': {
+                        'fill-color': 
+                        [                            
+                        'step',
+                        ["number",['get', 'ICU']],
+                        'Green', 1,                        
+                        'Yellow', 2,
+                        'Orange', 3,                        
+                        'Red'   
+
+                        ],
+                        'fill-opacity': 0.3
+                    },
+        
+        });
+
+        // INTERPOLATION PAR HEURES
+        // 15        
+        map.addSource('Int_ICU15', 
+            {
+            'type': 'geojson',
+            'data': 'Data/Result/ICU_Contours_22_15.geojson'
+            }
+                                    
+        ); 
+
+        map.addLayer(
+        {
+            'id': 'Int_ICU15',
+            'type': 'fill',
+            'source': 'Int_ICU15',
+            'layout': {'visibility': 'none'},                    
+            'paint': {
+                        'fill-color': 
+                        [                            
+                        'step',
+                        ["number",['get', 'ICU']],
+                        'Green', 1,                        
+                        'Yellow', 2,
+                        'Orange', 3,                        
+                        'Red'   
+
+                        ],
+                        'fill-opacity': 0.3
+                    },
+        
+        });
+
+        // INTERPOLATION PAR HEURES
+        // 16       
+        map.addSource('Int_ICU16', 
+            {
+            'type': 'geojson',
+            'data': 'Data/Result/ICU_Contours_22_16.geojson'
+            }
+                                    
+        ); 
+
+        map.addLayer(
+        {
+            'id': 'Int_ICU16',
+            'type': 'fill',
+            'source': 'Int_ICU16',
+            'layout': {'visibility': 'none'},                    
+            'paint': {
+                        'fill-color': 
+                        [                            
+                        'step',
+                        ["number",['get', 'ICU']],
+                        'Green', 1,                        
+                        'Yellow', 2,
+                        'Orange', 3,                        
+                        'Red'   
+
+                        ],
+                        'fill-opacity': 0.3
+                    },
+        
+        });
+
+        // INTERPOLATION PAR HEURES
+        // 5        
+        map.addSource('Int_ICU17', 
+            {
+            'type': 'geojson',
+            'data': 'Data/Result/ICU_Contours_22_17.geojson'
+            }
+                                    
+        ); 
+
+        map.addLayer(
+        {
+            'id': 'Int_ICU17',
+            'type': 'fill',
+            'source': 'Int_ICU17',
+            'layout': {'visibility': 'none'},                    
+            'paint': {
+                        'fill-color': 
+                        [                            
+                        'step',
+                        ["number",['get', 'ICU']],
+                        'Green', 1,                        
+                        'Yellow', 2,
+                        'Orange', 3,                        
+                        'Red'   
+
+                        ],
+                        'fill-opacity': 0.3
+                    },
+        
+        });
+
+        // INTERPOLATION PAR HEURES
+        // 5        
+        map.addSource('Int_ICU18', 
+            {
+            'type': 'geojson',
+            'data': 'Data/Result/ICU_Contours_22_18.geojson'
+            }
+                                    
+        ); 
+
+        map.addLayer(
+        {
+            'id': 'Int_ICU18',
+            'type': 'fill',
+            'source': 'Int_ICU18',
+            'layout': {'visibility': 'none'},                    
+            'paint': {
+                        'fill-color': 
+                        [                            
+                        'step',
+                        ["number",['get', 'ICU']],
+                        'Green', 1,                        
+                        'Yellow', 2,
+                        'Orange', 3,                        
+                        'Red'   
+
+                        ],
+                        'fill-opacity': 0.3
+                    },
+        
+        });
+
+        // INTERPOLATION PAR HEURES
+        // 19       
+        map.addSource('Int_ICU19', 
+            {
+            'type': 'geojson',
+            'data': 'Data/Result/ICU_Contours_22_19.geojson'
+            }
+                                    
+        ); 
+
+        map.addLayer(
+        {
+            'id': 'Int_ICU19',
+            'type': 'fill',
+            'source': 'Int_ICU19',
+            'layout': {'visibility': 'none'},                    
+            'paint': {
+                        'fill-color': 
+                        [                            
+                        'step',
+                        ["number",['get', 'ICU']],
+                        'Green', 1,                        
+                        'Yellow', 2,
+                        'Orange', 3,                        
+                        'Red'   
+
+                        ],
+                        'fill-opacity': 0.3
+                    },
+        
+        });
+
+        // INTERPOLATION PAR HEURES
+        // 20      
+        map.addSource('Int_ICU20', 
+            {
+            'type': 'geojson',
+            'data': 'Data/Result/ICU_Contours_22_20.geojson'
+            }
+                                    
+        ); 
+
+        map.addLayer(
+        {
+            'id': 'Int_ICU20',
+            'type': 'fill',
+            'source': 'Int_ICU20',
+            'layout': {'visibility': 'none'},                    
+            'paint': {
+                        'fill-color': 
+                        [                            
+                        'step',
+                        ["number",['get', 'ICU']],
+                        'Green', 1,                        
+                        'Yellow', 2,
+                        'Orange', 3,                        
+                        'Red'   
+
+                        ],
+                        'fill-opacity': 0.3
+                    },
+        
+        });
+
+        // INTERPOLATION PAR HEURES
+        // 21       
+        map.addSource('Int_ICU21', 
+            {
+            'type': 'geojson',
+            'data': 'Data/Result/ICU_Contours_22_21.geojson'
+            }
+                                    
+        ); 
+
+        map.addLayer(
+        {
+            'id': 'Int_ICU21',
+            'type': 'fill',
+            'source': 'Int_ICU21',
+            'layout': {'visibility': 'none'},                    
+            'paint': {
+                        'fill-color': 
+                        [                            
+                        'step',
+                        ["number",['get', 'ICU']],
+                        'Green', 1,                        
+                        'Yellow', 2,
+                        'Orange', 3,                        
+                        'Red'   
+
+                        ],
+                        'fill-opacity': 0.3
+                    },
+        
+        });
+
+        // INTERPOLATION PAR HEURES
+        // 22        
+        map.addSource('Int_ICU22', 
+            {
+            'type': 'geojson',
+            'data': 'Data/Result/ICU_Contours_22_22.geojson'
+            }
+                                    
+        ); 
+
+        map.addLayer(
+        {
+            'id': 'Int_ICU22',
+            'type': 'fill',
+            'source': 'Int_ICU22',
+            'layout': {'visibility': 'none'},                    
+            'paint': {
+                        'fill-color': 
+                        [                            
+                        'step',
+                        ["number",['get', 'ICU']],
+                        'Green', 1,                        
+                        'Yellow', 2,
+                        'Orange', 3,                        
+                        'Red'   
+
+                        ],
+                        'fill-opacity': 0.3
+                    },
+        
+        });
+
+        // INTERPOLATION PAR HEURES
+        // 23       
+        map.addSource('Int_ICU23', 
+            {
+            'type': 'geojson',
+            'data': 'Data/Result/ICU_Contours_22_23.geojson'
+            }
+                                    
+        ); 
+
+        map.addLayer(
+        {
+            'id': 'Int_ICU23',
+            'type': 'fill',
+            'source': 'Int_ICU23',
+            'layout': {'visibility': 'none'},                    
+            'paint': {
+                        'fill-color': 
+                        [                            
+                        'step',
+                        ["number",['get', 'ICU']],
+                        'Green', 1,                        
+                        'Yellow', 2,
+                        'Orange', 3,                        
+                        'Red'   
+
+                        ],
+                        'fill-opacity': 0.3
+                    },
+        
+        });
+
+        // FONCTION QUI MODIFIE LA COUCHE ACTIVE LORSQUE NOUS DÉPLACONS LA SLIDER BAR        
+        
+        switchlayer = function (lname) { 
+            
+            map.setLayoutProperty('Int_ICU0', 'visibility', 'none');
+            map.setLayoutProperty('Int_ICU1', 'visibility', 'none');
+            map.setLayoutProperty('Int_ICU2', 'visibility', 'none');
+            map.setLayoutProperty('Int_ICU3', 'visibility', 'none');
+            map.setLayoutProperty('Int_ICU4', 'visibility', 'none');
+            map.setLayoutProperty('Int_ICU5', 'visibility', 'none');
+            map.setLayoutProperty('Int_ICU6', 'visibility', 'none');
+            map.setLayoutProperty('Int_ICU7', 'visibility', 'none');
+            map.setLayoutProperty('Int_ICU8', 'visibility', 'none');
+            map.setLayoutProperty('Int_ICU9', 'visibility', 'none');
+            map.setLayoutProperty('Int_ICU10', 'visibility', 'none');
+            map.setLayoutProperty('Int_ICU11', 'visibility', 'none');
+            map.setLayoutProperty('Int_ICU12', 'visibility', 'none');
+            map.setLayoutProperty('Int_ICU13', 'visibility', 'none');
+            map.setLayoutProperty('Int_ICU14', 'visibility', 'none');
+            map.setLayoutProperty('Int_ICU15', 'visibility', 'none');
+            map.setLayoutProperty('Int_ICU16', 'visibility', 'none');
+            map.setLayoutProperty('Int_ICU17', 'visibility', 'none');
+            map.setLayoutProperty('Int_ICU18', 'visibility', 'none');
+            map.setLayoutProperty('Int_ICU19', 'visibility', 'none');
+            map.setLayoutProperty('Int_ICU20', 'visibility', 'none');
+            map.setLayoutProperty('Int_ICU21', 'visibility', 'none');
+            map.setLayoutProperty('Int_ICU22', 'visibility', 'none');
+            map.setLayoutProperty('Int_ICU23', 'visibility', 'none');
+
+            if (document.getElementById('slider').value == slider.value) {                  // La valeur du Slider sélectionne la couche à afficher
+                map.setLayoutProperty('Int_ICU'+slider.value, 'visibility', 'visible');                
+            }
+        }
+
+                      
+        var playButton = document.getElementById('play');         // Fonction qui définit le fonctionnement du bouton Play
+
+        playButton.addEventListener('click', () => {                                            // Activé avec un clic
+            playButton.classList.toggle('play');                                                // Change le texte du bouton de Play à Pause
+            if (playButton.classList.contains('play')) {
+                console.log('Play');                             
+                var timer = setInterval(function(){                                             // Exécute le contenu de la fonction toutes les secondes
+                    slider.value ++;                                                            // Augmenter 1 unité la valeur du Slider
+                    console.log(slider.value);                   
+                    hour = parseInt(slider.value,10);                                           // Mettre à jour la variable globale hour
+                    filterBy(hour);                                                             // Mettre à jour la variable globale hour
+                    switchlayer();                                                              // Lance la fonction switchlayer
+                    playButton.addEventListener('click', () => {clearInterval(timer);});        // Arrête la fonction avec un clic
+                    }, 1000);                              
+                
+            } 
+
+        });       
+
+    });
+</script>
+
+</body>
+</html>
