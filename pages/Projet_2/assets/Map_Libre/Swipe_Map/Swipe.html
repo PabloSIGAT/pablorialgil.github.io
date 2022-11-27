@@ -8,9 +8,9 @@
       content="initial-scale=1,maximum-scale=1,user-scalable=no"
     />
     <!--  <script src="../.env"></script> -->
-    <script src="https://unpkg.com/maplibre-gl@2.1.6/dist/maplibre-gl.js"></script>
-    <link href="https://unpkg.com/maplibre-gl@2.1.6/dist/maplibre-gl.css" rel="stylesheet"/>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="assets_vertical_bar/maplibre-gl.js"></script>
+    <link href="assets_vertical_bar/maplibre-gl.css" rel="stylesheet"/>
+    <script src="assets_vertical_bar/jquery.min.js"></script>
     <style>
       body {
         margin: 0;
@@ -47,8 +47,8 @@
         width: 100%;
       }
     </style>
-    <script src="dist/maplibre-gl-compare.js"></script>
-    <link rel="stylesheet" href="dist/maplibre-gl-compare.css" type="text/css" />
+    <script src="assets_vertical_bar/maplibre-gl-compare.js"></script>
+    <link rel="stylesheet" href="assets_vertical_bar/maplibre-gl-compare.css" type="text/css" />
     <div id="comparison-container">
       <div id="before" class="map"></div>
       <div id="after" class="map"></div>
@@ -58,7 +58,7 @@
       // CARTE SITUEE A GAUCHE DE L'ECRAN
       var beforeMap = new maplibregl.Map({
         container: "before",
-        style: 'https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json',
+        style: 'https://api.maptiler.com/maps/streets/style.json?key=get_your_own_OpIi9ZULNHzrESv6T2vL',
         center: [-1.67, 48.11],
         zoom: 9.5,
         scrollZoom: true
@@ -69,19 +69,60 @@
 
         beforeMap.addSource('jsonData1', {
             'type': 'geojson',
-            'data': 'Data/Stations_Select.geojson'
+            'data': 'Data/Temp_22_11h.geojson'
         });
 
-              
+        // Add stations as a circles 
         beforeMap.addLayer({            
-          "id": "jsonData1",
+          "id": "Stations",
           "type": "circle",
-          "source": "jsonData1",
-          //"source-layer": layerName,
+          "source": "jsonData1",          
           'paint': {               
               'circle-radius': 5,
-              'circle-color': '#007cbf'
+              'circle-color': '#0052FF'
           }
+        });
+
+        // Add station labels (Temperature)
+        beforeMap.addLayer({
+          'id': 'Station_Label',
+          'type': 'symbol',
+          'source': 'jsonData1',
+          'layout': {
+              'text-field': [
+                  'concat',
+                  ['to-string', ['get', 'Temp']],
+                  '°C'
+              ],
+              'text-font': [
+                  'Open Sans Bold',
+                  'Arial Unicode MS Bold'
+              ],
+              'text-size': 12,
+              'text-variable-anchor': ['bottom', 'right', 'left'],
+              'text-radial-offset': 0.5,             
+          },
+          'paint': {
+              'text-color': "black"
+          }
+        });
+
+         // Add Communes division
+         beforeMap.addSource('Communes', {
+            'type': 'geojson',
+            'data': 'Data/Communes_Select.geojson'
+          });
+
+        beforeMap.addLayer({
+            'id': 'Communes',
+            'type': 'line',
+            'source': 'Communes',
+            'maxzoom':14,                  
+            "paint": 
+            {   
+                "line-color": "red",            
+                'line-width': 1
+            }
         });
 
       });
@@ -90,7 +131,7 @@
       // CARTE SITUEE A DROIT DE L'ECRAN
       var afterMap = new maplibregl.Map({
         container: "after",
-        style: 'https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json',
+        style: 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json',
         center: [-1.67, 48.11],
         zoom: 9.5,
         scrollZoom: true
@@ -102,19 +143,60 @@
 
         afterMap.addSource('jsonData2', {
             'type': 'geojson',
-            'data': 'Data/Stations_Select2.geojson'
+            'data': 'Data/Temp_22_20h.geojson'
         });
 
-              
+        // Add stations as a circles     
         afterMap.addLayer({            
           "id": "jsonData2",
           "type": "circle",
-          "source": "jsonData2",
-          //"source-layer": layerName,
+          "source": "jsonData2",          
           'paint': {               
               'circle-radius': 5,
-              'circle-color': 'red'
+              'circle-color': '#0000f8'
           }
+        });
+
+        // Add station labels (Temperature)
+        afterMap.addLayer({
+          'id': 'Station_Label',
+          'type': 'symbol',
+          'source': 'jsonData2',
+          'layout': {
+              'text-field': [
+                  'concat',
+                  ['to-string', ['get', 'Temp']],
+                  '°C'
+              ],
+              'text-font': [
+                  'Open Sans Bold',
+                  'Arial Unicode MS Bold'
+              ],
+              'text-size': 12,
+              'text-variable-anchor': ['bottom', 'right', 'left'],
+              'text-radial-offset': 0.5,             
+          },
+          'paint': {
+              'text-color': "white"
+          }
+        });
+
+         // Communes
+         afterMap.addSource('Communes', {
+            'type': 'geojson',
+            'data': 'Data/Communes_Select.geojson'
+          });
+
+          afterMap.addLayer({
+            'id': 'Communes',
+            'type': 'line',
+            'source': 'Communes',
+            'maxzoom':14,                  
+            "paint": 
+            {   
+                "line-color": "white",            
+                'line-width': 1
+            }
         });
 
       });

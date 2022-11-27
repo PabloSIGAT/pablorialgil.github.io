@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>ICU Rennes</title>
+<meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+<!-- <script src="libraries/jquery-3.3.1.min.js"></script> -->
+<script src="https://unpkg.com/maplibre-gl@2.1.7/dist/maplibre-gl.js"></script>
+<link href="https://unpkg.com/maplibre-gl@2.1.7/dist/maplibre-gl.css" rel="stylesheet" />
+<style>
+	body { margin: 0; padding: 0; }
+	#map { position: absolute; top: 0; bottom: 0; width: 100%; }
+
+</style>
+
+</head>
+<body>
+<div id="map"></div>
+
+<script>
+    var map = new maplibregl.Map({
+        container: 'map',
+        style: 'https://api.maptiler.com/maps/hybrid/style.json?key=get_your_own_OpIi9ZULNHzrESv6T2vL',
+        //style: 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json',
+        //style: 'https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json',
+        //style: 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json',
+        center: [-1.67, 48.11],
+        zoom: 9.5,
+        scrollZoom: true
+    });
+
+    map.on("load", function() {   
+    
+        
+        // IRPICU
+        map.addSource('IRPICU', 
+            {
+            'type': 'geojson',
+            'data': 'Data/IRPICU.geojson'
+            }
+        );        
+        map.addLayer(
+        {
+            'id': 'IRPICU',
+            'type': 'fill',
+            'source': 'IRPICU',
+            //'minzoom':14,        
+            //"paint": {"fill-color": "red", "fill-opacity": 0.6}
+            'paint': {
+                        'fill-color': 
+                        [                            
+                        'step',
+                        ["number",['get', 'IRPICU']],
+                        '#277da1', 1,
+                        '#08c239', 2,
+                        '#eda109', 3,
+                        '#ed0909'
+
+                        ],
+                        'fill-opacity': 0.6
+                    },
+            
+        });
+
+        // Batî 1
+        map.addSource('bati', 
+                {
+                'type': 'geojson',
+                'data': 'data/batiments.geojson'
+                }
+            );
+            map.addLayer({
+                'id': 'bati',
+                'type': 'fill-extrusion',
+                'source': 'bati',
+                'layout': {'visibility': 'visible'},
+                'paint': {'fill-extrusion-color': '#bfbfbf', 
+                    'fill-extrusion-height': ['get', 'zmax'],
+                    'fill-extrusion-opacity': 0.9,
+                    'fill-extrusion-base': 0}
+            });
+
+        // Batî 2
+        map.addSource('bati2', 
+                {
+                'type': 'geojson',
+                'data': 'data/batiments_part2.geojson'
+                }
+            );
+            map.addLayer({
+                'id': 'bati2',
+                'type': 'fill-extrusion',
+                'source': 'bati2',
+                'layout': {'visibility': 'visible'},
+                'paint': {'fill-extrusion-color': '#bfbfbf', 
+                    'fill-extrusion-height': ['get', 'zmax'],
+                    'fill-extrusion-opacity': 0.9,
+                    'fill-extrusion-base': 0}
+            });
+        
+        // Stations
+        map.addSource('Stations', 
+                {
+                'type': 'geojson',
+                'data': 'data/Stations_Select.geojson'
+                }
+            );
+
+            map.addLayer(
+                {
+                'id': 'Stations',
+                'type': 'circle',                
+                'source': 'Stations',
+                'layout': {'visibility': 'none'},
+                'paint': {'circle-radius': 5,
+                    'circle-color': '#00ff4c',
+                    'circle-opacity':0.7},
+                }
+            );
+
+         // Communes
+         map.addSource('Communes', 
+            {
+            'type': 'geojson',
+            'data': 'Data/Communes_Select.geojson'
+            }
+        );        
+        map.addLayer(
+        {
+            'id': 'Communes',
+            'type': 'line',
+            'source': 'Communes',
+            'maxzoom':14,                  
+            "paint": 
+            {   
+                "line-color": "red",            
+                'line-width': 1
+            }
+                        
+        });
+
+   
+    });
+
+</script>
+
+</body>
+</html>
