@@ -60,7 +60,7 @@
         container: "before",
         style: 'https://api.maptiler.com/maps/streets/style.json?key=get_your_own_OpIi9ZULNHzrESv6T2vL',
         center: [-1.67, 48.11],
-        zoom: 9.5,
+        zoom: 10.5,
         scrollZoom: true
 
       });
@@ -77,9 +77,26 @@
           "id": "Stations",
           "type": "circle",
           "source": "jsonData1",          
-          'paint': {               
-              'circle-radius': 5,
-              'circle-color': '#0052FF'
+          'paint': {
+            'circle-color': [
+                'interpolate',
+                ['linear'],
+                ['get', 'Temp'],
+                18,
+                '#FACA1B',
+                22,
+                '#fa0202'
+            ],
+            'circle-opacity': 0.85,
+            'circle-radius': [
+                'interpolate',
+                ['linear'],
+                ['get', 'Temp'],
+                1,
+                1,
+                3,
+                6
+            ]
           }
         });
 
@@ -133,7 +150,7 @@
         container: "after",
         style: 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json',
         center: [-1.67, 48.11],
-        zoom: 9.5,
+        zoom: 10.5,
         scrollZoom: true
 
       });
@@ -151,9 +168,26 @@
           "id": "jsonData2",
           "type": "circle",
           "source": "jsonData2",          
-          'paint': {               
-              'circle-radius': 5,
-              'circle-color': '#0000f8'
+          'paint': {
+            'circle-color': [
+                'interpolate',
+                ['linear'],
+                ['get', 'Temp'],
+                12,
+                '#2EB6FA',
+                16,
+                '#FACA1B'
+            ],
+            'circle-opacity': 0.85,
+            'circle-radius': [
+                'interpolate',
+                ['linear'],
+                ['get', 'Temp'],
+                1,
+                1,
+                3,
+                6
+            ]
           }
         });
 
