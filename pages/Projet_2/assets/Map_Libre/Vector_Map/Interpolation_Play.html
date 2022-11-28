@@ -8,29 +8,28 @@
 <script src="js/maplibre-gl.js"></script>
 <link href="css/maplibre-gl.css" rel="stylesheet" />
 <script src="js/jquery.min.js"></script> 
-<style>
-	body { margin: 0; padding: 0; }
-	#map { position: absolute; top: 0; bottom: 0; width: 100%; }
-</style>
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-
 <div id="map"></div>
-<button id="play"></button>
-
 <div class="map-overlay top">
     <div class="map-overlay-inner">
-        <h2>22 julliet 2021 </h2>
+        <h2>22 julliet 2021 (<span id="hour"></span>:00 h)</h2>
         <label id="hour"></label>
         <input id="slider" type="range" min="0" max="23" step="1" value="0" onchange="switchlayer('Int_ICU'+slider.value)" oninput= "slider.value" />
     </div>
     <div class="map-overlay-inner">
         <div id="legend" class="legend">
+            <div style= "display: flex; justify-content: space-between">
+                <div style="Color:green"><b>0</b></div>
+                <div style="Color:red"><b>>2.5</b></div>
+            </div>
             <div class="bar"></div>
-            <div>Intensité Îlot de Chaleur Urbain (ICU)</div>
+            <div>Intensité ICU (°C)</div>
         </div>
     </div>
+    <button id="play"></button>
+    
 </div>
 
 <script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
@@ -80,12 +79,12 @@
         var filters = ['==', 'hour', hour];
         map.setFilter('Temp-circles', filters);
         map.setFilter('Temp-labels', filters);
-             
-
         // Set the label to the hour
-        document.getElementById('hour').textContent = hour[hour];
+        document.getElementById('hour').textContent = hour;       
         console.log(hour);
     }
+    
+    
 
     map.on('load', function () {        
               
@@ -985,8 +984,7 @@
             if (playButton.classList.contains('play')) {
                 console.log('Play');                             
                 var timer = setInterval(function(){                                             // Exécute le contenu de la fonction toutes les secondes
-                    slider.value ++;                                                            // Augmenter 1 unité la valeur du Slider
-                    console.log(slider.value);                   
+                    slider.value ++;                                                            // Augmenter 1 unité la valeur du Slider                                       
                     hour = parseInt(slider.value,10);                                           // Mettre à jour la variable globale hour
                     filterBy(hour);                                                             // Mettre à jour la variable globale hour
                     switchlayer();                                                              // Lance la fonction switchlayer

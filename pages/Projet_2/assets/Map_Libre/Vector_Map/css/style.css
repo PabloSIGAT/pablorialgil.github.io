@@ -1,3 +1,6 @@
+body { margin: 0; padding: 0; }
+#map { position: absolute; top: 0; bottom: 0; width: 100%; }
+
 .map-overlay {
     font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
     position: absolute;
@@ -38,8 +41,7 @@
 /* Button Play - Pause */
 button {
     position: absolute;
-    margin: 20px;
-    top: 140px;
+    border-radius: 5px;    
     }
     
     #play::after {
@@ -49,3 +51,16 @@ button {
     #play.play::after {
     content: 'Pause';
     }
+
+@media screen and (max-width: 1000px) {
+    .map-overlay {
+        width: 50%;
+    }	
+}
+
+@media screen and (max-width: 500px) {
+    .map-overlay {
+        width: 259px;
+        
+    }	 
+}
