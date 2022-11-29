@@ -19,7 +19,7 @@
         container: 'map',
         //style: 'https://api.maptiler.com/maps/streets/style.json?key=get_your_own_OpIi9ZULNHzrESv6T2vL',
         style: 'https://api.maptiler.com/maps/hybrid/style.json?key=get_your_own_OpIi9ZULNHzrESv6T2vL',     // (Satellite Labels)
-        center: [-1.67, 48.11],
+        center: [-1.69, 48.11],
         zoom: 9.5,
         scrollZoom: true
     });
@@ -28,7 +28,7 @@
         
         map.addSource("Raster", {
             "type": "image",
-            "url": "data/Temp_22_21_col.png",
+            "url": "data/ICU_22_21_col.png",
             "coordinates": [                 
                 [-1.9064141230803082, 48.25887506303241],
                 [-1.446210859194943, 48.25887506303241],
@@ -44,7 +44,7 @@
             "source": "Raster",
             "type": "raster",
             "paint": {
-                "raster-opacity": 0.4                
+                "raster-opacity": 0.6                
             }
                 
         });

@@ -31,19 +31,44 @@
 
       <h1 class="projet">Introduction</h1>
       <p class= "projet">
-        A votre disposition, juste au-dessus de cette rubrique, le rapport issu de la collaboration 
-        entre le laboratoire de recherche LETG de Rennes et le Master SIGAT.
+        A disposition, juste au-dessus de cette rubrique, le rapport issu de la collaboration 
+        entre le laboratoire de recherche LETG de Rennes et le Master SIGAT.         
       </p>
       <p class= "projet">
-        <b>Représentation vectorielle de l'interpolation des températures :</b>
+        Les <b>Îlots de Chaleur Urbains (ICU)</b> sont des élévations localisées des températures, 
+        particulièrement des températures maximales diurnes et nocturnes, enregistrées en milieu urbain 
+        par rapport aux zones rurales ou forestières voisines ou par rapport aux températures moyennes régionales.
       </p>
+      <h1></h1>      
+      <h1 class="projet">Représentation vectorielle de l'interpolation des intensités des ICU :</h1>
       <p class= "projet">Le bouton "Play" permet d'animer le passage des heures du 22 juillet 2021 
         (Maintenez le bouton droit de la souris enfoncé pour pivoter en 3D).</p>      
-      <iframe src="assets/Map_Libre/Vector_Map/Interpolation_Play.html" style="width:90%;height:800px;" title="Interpolation vectoriel"></iframe>
+      <iframe title="Interpolation vectoriel" src="assets/Map_Libre/Vector_Map/Interpolation_Play.html" style="width:100%;height:650px;"></iframe>    
       <h1></h1>
-      <p class= "projet"><b>Swipe map :</b></p>
+      <h1 class="projet">Swipe map :</h1>      
       <p class= "projet">Cette carte permet de comparer deux informations différentes en déplaçant la barre verticale avec la souris.</p>
-      <iframe src="assets/Map_Libre/Swipe_Map/Swipe.html" style="width:90%;height:800px;" title="Interpolation vectoriel"></iframe>
+      <p class= "projet">
+        <b>A gauche :</b>
+        <ul style="list-style-type: disc;">
+          <li>Température à 11h00 le 22/09/2021</li>
+          <li>Fond de carte clair</li>
+          <li>Pas de grandes différences de température Ville-Campgne</li>
+        </ul>
+        <b>A droite :</b>
+        <ul style="list-style-type: disc;">
+          <li>Température à 20h00 le 22/09/2021</li>
+          <li>Fond de carte sombre</li>
+          <li>Plus de 3.5 °C de différence Ville-Campgne</li>
+        </ul>
+      </p>
+      <iframe title="Swipe map" src="assets/Map_Libre/Swipe_Map/Swipe.html" style="width:100%;height:650px;"></iframe>
+      <h1></h1>
+      <h1 class="projet">Représentation raster de l'interpolation des températures :</h1>      
+      <p class= "projet">
+        Superposition d'une image raster résultat d'une interpolation IDW (pondération inverse à la distance)
+        réalisé avec la bibliothèque GDAL en Python.
+      </p>
+      <iframe title="Swipe map" src="assets/Map_Libre/Raster_Map/Raster.html" style="width:100%;height:650px;"></iframe>
     </section>
     <!-- FOOTER -->
     <div class="banner"><h1></h1></div>

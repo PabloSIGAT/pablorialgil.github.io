@@ -51,7 +51,6 @@ button {
     #play.play::after {
     content: 'Pause';
     }
-
 @media screen and (max-width: 1000px) {
     .map-overlay {
         width: 50%;
@@ -60,7 +59,7 @@ button {
 
 @media screen and (max-width: 500px) {
     .map-overlay {
-        width: 259px;
+        width: 220px;
         
     }	 
 }
